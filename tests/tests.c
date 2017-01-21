@@ -12,6 +12,19 @@
 
 int tests_run = 0;
 
+static char* test_checkPowerTwo()
+{
+    unsigned int x = 256;
+    unsigned int y = 65536;
+    unsigned int z = 6532;
+
+    mu_assert("error checkPower2(256) != true", checkPowerTwo(x));
+    mu_assert("error checkPower2(65536) != true", checkPowerTwo(y));
+    mu_assert("error checkPower2(6532) != false", !checkPowerTwo(z));
+    return 0;
+}
+
+
 static char* test_reverseBits()
 {
     unsigned int x = 0x4;
@@ -23,13 +36,14 @@ static char* test_reverseBits()
     unsigned int z_expected = 0xF77DB57B;
 
     mu_assert("error reverseBits(0x4) != 0x20000000", reverseBits(x) == x_expected);
-    mu_assert("error reverseBits(0x2) != 0x10000000", reverseBits(y) == y_expected);
+    mu_assert("error reverseBits(0x8) != 0x10000000", reverseBits(y) == y_expected);
     mu_assert("error reverseBits(0xDEADBEEF) != 0xF77DB57B", reverseBits(z) == z_expected);
     return 0;
 }
 static char* all_tests()
 {
     mu_run_test(test_reverseBits);
+    mu_run_test(test_checkPowerTwo);
     return 0;
 }
 

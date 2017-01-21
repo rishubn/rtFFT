@@ -1,15 +1,18 @@
-#include <stdio.h>
-//#include <complex.h>
-
-//#define NUMELEMS(x) (sizeof(x) / sizeof((x)[0]))
 #include "fft.h"
 
 #define CHAR_BIT 8*sizeof(char)
 
-unsigned int reverseBits(unsigned int num)
+
+bool checkPowerTwo(uint_t n)
 {
-    unsigned int  num_bits  = sizeof(num) * CHAR_BIT;
-    unsigned int reverse_num = 0;
+    return ((n & (n -1)) == 0);
+}
+
+
+uint_t reverseBits(uint_t num)
+{
+    uint_t  num_bits  = sizeof(num) * CHAR_BIT;
+    uint_t reverse_num = 0;
     int i;
     for (i = 0; i < num_bits; i++)
     {
