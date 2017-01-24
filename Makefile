@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-c -Wall
 LDFLAGS=-lm
-SOURCES=main.c fft.c
+SOURCES=main.c fft.c error.c
 TESTS=tests/tests.c
 TEST_SOURCES= $(filter-out main.c, $(SOURCES))
 OBJECTS=$(SOURCES:.c=.o)

@@ -1,23 +1,18 @@
+//This component is designed to make error handling and processing easier
 #ifndef ERROR_H_INCLUDED
 #define ERROR_H_INCLUDED
 
-#include <stdio.h>
-
-enum error_codes
+typedef enum error_codes
 {
-    E_SUCESS = 0,
+    E_SUCCESS = 0,
     E_INVALID_INPUT = -1,
-}
-
-typedef error_codes error_t;
+} error_t;
 
 struct errordesc {
     int code;
     char* message;
-} errordesc = {
-    { E_SUCCESS, "No error" },
-    { E_INVALID_INPUT, "Invalid input" },
-};
+}; 
 
+void eprintf(error_t errnum);
 
 #endif

@@ -2,7 +2,6 @@
 #include <complex.h>
 #include "fft.h"
 
-
 #define NUMELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
 int main()
