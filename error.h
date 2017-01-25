@@ -13,6 +13,6 @@ struct errordesc {
     char* message;
 }; 
 
-void eprintf(error_t errnum);
+void eprintf(error_t errnum, const char* desc);
 
 #endif

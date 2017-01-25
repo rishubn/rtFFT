@@ -2,6 +2,7 @@
 #include "fft.h"
 #include "error.h"
 #include <limits.h>
+#include <stddef.h>
 
 bool checkPowerTwo(uint_t n)
 {
@@ -24,15 +25,18 @@ uint_t reverseBits(uint_t num)
    }
     return reverse_num;
 }
-
-dcomp_t* bitReverseCopy(dcomp_t input[], size_t length)
+int bitReverseCopy(dcomp_t input[], dcomp_t output[], size_t length)
 {
-    dcomp_t reversed[length];
+    bool isLengthPowerTwo = checkPowerTwo(length);
+    if(isLengthPowerTwo == false || isLengthPowerTwo == E_INVALID_INPUT)
+    {
+        return E_INVALID_INPUT;
+    }
     for(uint_t i = 0; i < length; i++)
     {
-        reversed[reverseBits(i)] = input[i];
+        output[reverseBits(i)] = input[i];
     }
-    return reversed;
+    return E_SUCCESS;
 }
 
 
