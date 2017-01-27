@@ -6,11 +6,13 @@
 
 int main()
 {
-    unsigned int x = 4;
-    unsigned int y = 8;
-    unsigned int z = 0xDEADBEEF;
-    printf("%04x %04x\n", x, reverseBits(x));
-    printf("%04x %04x\n", y, reverseBits(y));
-    printf("%04x %04x\n", z, reverseBits(z));
+    for(int i = 0; i < 32; i++)
+    {
+        uint_t bitMask = generateBitMask(32);
+        printf("0x%08x, 0x%08x 0x%08x \n", i, reverseBits(i) & bitMask, bitMask);
+        
+
+
+    }
     return 0;
 }
