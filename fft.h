@@ -14,6 +14,7 @@ int checkPowerTwo(uint_t n);
 uint_t reverseBits(uint_t n);
 uint_t fastlog2(uint_t n);
 int bitReverseCopy(dcomp_t input[], dcomp_t output[], size_t length);
+int iterativeFFT(dcomp_t input[], dcomp_t output[], size_t length);
 
 
 #endif

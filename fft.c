@@ -2,7 +2,7 @@
 #include "fft.h"
 #include "error.h"
 #include <limits.h>
-
+#include <stdio.h>
 //bit hack magic - table for finding log(n)
 static const int MultiplyDeBruijnBitPosition2[32] = 
 {
@@ -45,11 +45,6 @@ int bitReverseCopy(dcomp_t input[], dcomp_t output[], size_t length)
         eprintf(E_INVALID_INPUT, "Given array length is not a power of 2");
         return E_INVALID_INPUT;
     }
-    if(length < 256)
-    {
-        eprintf(E_INVALID_INPUT, "Input array must contain >255 elements");
-        return E_INVALID_INPUT;
-    }
     uint_t wordlength = fastlog2(length);
     for(uint_t i = 0; i < length; i++)
     {
@@ -58,7 +53,32 @@ int bitReverseCopy(dcomp_t input[], dcomp_t output[], size_t length)
     return E_SUCCESS;
 }
 
+int iterativeFFT(dcomp_t input[], dcomp_t output[], size_t length)
+{
+    if(bitReverseCopy(input, output, length) != E_SUCCESS)
+    {
+        return E_INVALID_INPUT;
+    }
+    for(uint_t i = 1; i <= fastlog2(length); i++)
+    {
+        uint_t m = 1 << i;
+        dcomp_t omega_m = cexp(-2*3.14159*I/m);
 
+        for(uint_t j = 0; j < length; j += m)
+        {
+            dcomp_t omega = 1.0;
+            for(uint_t k = 0; k < (m/2); k++)
+            {
+                dcomp_t t = omega*output[j + k + m/2];
+                dcomp_t u = output[j + k];
+                output[j + k] = u + t;
+                output[j + k + m/2] = u - t;
+                omega = omega * omega_m;            
+            }
+        }
+    }
+    return E_SUCCESS;
+}
 
 
 
