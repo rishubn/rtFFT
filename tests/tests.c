@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
 #include "minunit.h"
 #include "../fft.h"
 #define KNRM  "\x1B[0m"
@@ -79,7 +80,7 @@ static char* test_bitReverseCopy()
     }
     return 0;
 }
-
+//Tests FFT on a shifted impulse. Expected data provided by MATLAB
 static char* test_iterativeFFT()
 {
     dcomp_t expected[8];
@@ -95,25 +96,20 @@ static char* test_iterativeFFT()
     input[7] = 0;
 
     expected[0] = 1;
-    expected[1] = 0.7071 - 0.7071*I;
+    expected[1] = 0.707107 - 0.707107*I;
     expected[2] = 0-1*I;
-    expected[3] = -0.7071 - 0.7071*I;
+    expected[3] = -0.707107 - 0.707107*I;
     expected[4] = -1;
-    expected[5] = -0.7071 + 0.7071*I;
+    expected[5] = -0.707107 + 0.707107*I;
     expected[6] = 1*I;
-    expected[7] = 0.7071 + 0.7071*I;;
+    expected[7] = 0.707107 + 0.707107*I;;
 
     iterativeFFT(input, output, 8);
     int i = 0;
     while(i < 8)
     {
-        output[i] = roundf(creal(output[i]*10000))/10000 + (roundf(cimag(output[i]*10000))/10000)*I;
-        printf("%f %f\n",creal(expected[i]), creal(output[i]));
-        printf("%f %f\n",cimag(expected[i]), cimag(output[i]));
-        mu_assert("Expected FFT was not returned",creal(expected[i]) == creal(output[i]));
+        mu_assert("Calculated result did not match expected", cabs(expected[i] - output[i]) < 0.000001);
         i++;
-        printf("%d\n",i);
-        
     }
     return 0;
 }
