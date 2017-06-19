@@ -10,6 +10,8 @@ typedef enum error_codes
 {
     E_SUCCESS = 0,
     E_INVALID_INPUT = -1,
+    E_INVALID_FILE = -2,
+    E_BUFFER_INIT_ERROR = -3,
 } error_t;
 
 struct errordesc {
@@ -21,12 +23,14 @@ static void eprintf(error_t errnum, const char* desc);
 
 static struct errordesc error_descriptions[] = 
 { {E_SUCCESS, "No Error"},
-  {E_INVALID_INPUT, "Invalid input"} };
+  {E_INVALID_INPUT, "Invalid input"},
+  {E_INVALID_FILE, "Invalid file" },
+  {E_BUFFER_INIT_ERROR, "Buffer not initialized correctly"}};
 
 //Function Definitions
 
 void eprintf(error_t errnum, const char* desc)
 {
-    printf("%s : %s",error_descriptions[-errnum].message, desc);
+    printf("%s : %s\n",error_descriptions[-errnum].message, desc);
 }
 #endif

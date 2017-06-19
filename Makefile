@@ -1,7 +1,7 @@
 CC=clang
-CFLAGS=-c -Wall
-LDFLAGS=-lm
-SOURCES=main.c
+CFLAGS=-c -Wall -g
+LDFLAGS=-lm -lsndfile
+SOURCES=main.c cbuffer.c
 TESTS=tests/tests.c
 TEST_SOURCES= $(filter-out main.c, $(SOURCES))
 OBJECTS=$(SOURCES:.c=.o)
