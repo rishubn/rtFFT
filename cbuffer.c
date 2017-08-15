@@ -37,8 +37,8 @@ int cb_read(cbuffer_t* cb, void* data, size_t datasize)
     }
     const uint8_t* end = cb->buffer + cb->capacity;
     const uint8_t* dst = data;
+    const uint8_t* start = cb->tail;
     size_t i;
-  //  printf("-----------b");
     for(i = 0; i < datasize; i++)
     {
         // wrap
@@ -48,10 +48,10 @@ int cb_read(cbuffer_t* cb, void* data, size_t datasize)
         }
         if(cb->tail == cb->head)
         {
+            cb->tail = start; //reset the tail when underflow occurs
             return E_UNDERFLOW;
         }
         memcpy(dst, cb->tail, sizeof(uint8_t));
-     //   printf("%02x\n", *(src));
         cb->tail++;
         dst++;
     }

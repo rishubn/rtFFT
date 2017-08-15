@@ -81,6 +81,7 @@ static char* test_bitReverseCopy()
     }
     return 0;
 }
+// Tests cb_create and destroy
 static char* test_cb_create()
 {
     size_t expected_capacity = 2*sizeof(uint8_t);
@@ -93,7 +94,52 @@ static char* test_cb_create()
     cb_destroy(cb);
     return 0;
 }
+// Writes data to the buffer and ensures its stored correctly.
+static char* test_cb_write()
+{
+    cbuffer_t* cb = cb_create(sizeof(uint32_t));
+    uint8_t a = 0xAA;
+    uint16_t bc = 0xBBCC;
+    uint8_t d = 0xDD;
+    uint8_t e = 0xEE;
 
+    // Write four bytes of data to the buffer
+    cb_write(cb, &a, sizeof(uint8_t));
+    cb_write(cb, &bc, sizeof(uint16_t));
+    cb_write(cb, &d, sizeof(uint8_t));
+
+    uint8_t* p = cb->buffer;
+    mu_assert("cb_write did not write correctly", *(p++) == a);
+    mu_assert("cb_write did not write correctly", *(p++) == 0xCC);
+    mu_assert("cb_write did not write correctly", *(p++) == 0xBB);
+    mu_assert("cb_write did not write correctly", *(p++) == d);
+    
+    // Write more bytes to test wrap.
+    cb_write(cb, &e, sizeof(uint8_t));
+    p = cb->buffer;
+    mu_assert("cb_write did not wrap correctly", *(p) == e);
+    cb_write(cb, &bc, sizeof(uint16_t));
+    cb_write(cb, &bc, sizeof(uint16_t));
+    mu_assert("cb_write did not wrap correctly", *(p) == 0xBB);
+    
+    return 0;
+}
+
+// Writes some test data to the buffer and reads it
+static char* test_cb_read()
+{
+    cbuffer_t* cb = cb_create(sizeof(uint32_t));
+    uint8_t a = 0xAA;
+    uint16_t bc = 0xBBCC;
+    uint8_t d = 0xDD;
+    uint8_t e = 0xEE;
+    mu_assert("Buffer not initialized to empty", cb_read(cb, NULL, 0));
+    // Write four bytes of data to the buffer
+    cb_write(cb, &a, sizeof(uint8_t));
+    cb_write(cb, &bc, sizeof(uint16_t));
+    cb_write(cb, &d, sizeof(uint8_t));
+
+}
 //Tests FFT on a shifted impulse. Expected data provided by MATLAB
 static char* test_iterativeFFT()
 {
@@ -135,6 +181,7 @@ static char* all_tests()
     mu_run_test(test_bitReverseCopy);
     mu_run_test(test_iterativeFFT);
     mu_run_test(test_cb_create);
+    mu_run_test(test_cb_write);
     return 0;
 }
 
