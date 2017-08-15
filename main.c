@@ -2,23 +2,37 @@
 #include <complex.h>
 #include "fft.h"
 #include "error.h"
+#include "cbuffer.h"
+#include <sndfile.h>
 #include <math.h>
 #define NUMELEMS(x) (sizeof(x) / sizeof((x)[0]))
 #define INTMAX sizeof(uint_t)
 int main()
 {
-    dcomp_t x[8192];
-    dcomp_t y[8192];
-    for(int i = 0; i < 8192; i++)
+
+    cbuffer_t* cb = cb_create(2*sizeof(dcomp_t));
+   // printf("%zu", cb->capacity);
+    if(cb == NULL)
     {
-        dcomp_t z = csin(2*3.14159*i*100/8192); //+ 0*I;
-        x[i] = z;
+        eprintf(E_BUFFER_INIT_ERROR, "Failed to create buffer");
+        return E_BUFFER_INIT_ERROR;
     }
-    iterativeFFT(x,y,8192);
-    for(int i =0; i < 8192; i++)
+    double data = 15.0;
+    double data2 = 10.0;
+    cb_write(cb, &data, sizeof(double));
+   // cb_write(cb, &data2, sizeof(double));
+    double dataout;
+    size_t x = 0;
+    printf("----\n");
+    while(x < sizeof(double))
     {
-        printf("%f + %f*i\n", creal(y[i]), cimag(y[i]));
+        printf("%02x \n", *(cb->buffer + x));
+        x+= sizeof(uint8_t);
     }
-    eprintf(E_SUCCESS,"HELLO");
+    cb_read(cb, &dataout, sizeof(double));
+  //  printf("\n%f %f\n", creal(dataout), cimag(dataout));
+    int y = cb_destroy(cb);
     return 0;
 }
+
+
