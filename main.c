@@ -10,26 +10,38 @@
 int main()
 {
 
-    cbuffer_t* cb = cb_create(2*sizeof(dcomp_t));
+    cbuffer_t* cb = cb_create(2*sizeof(uint8_t));
    // printf("%zu", cb->capacity);
     if(cb == NULL)
     {
         eprintf(E_BUFFER_INIT_ERROR, "Failed to create buffer");
         return E_BUFFER_INIT_ERROR;
     }
-    double data = 15.0;
-    double data2 = 10.0;
-    cb_write(cb, &data, sizeof(double));
-   // cb_write(cb, &data2, sizeof(double));
-    double dataout;
-    size_t x = 0;
+    uint8_t data = 0xAB;
+    uint8_t data2 = 0xCD;
+    cb_write(cb, &data, sizeof(uint8_t));
+    cb_write(cb, &data2, sizeof(uint8_t));
+    // cb_write(cb, &data2, sizeof(uint8_t));
+    // cb_write(cb, &data, sizeof(uint8_t));
+    // cb_write(cb, &data2, sizeof(uint8_t));
+    // uint16_t data3 = 0xFE10;
+    // cb_write(cb, &data3, sizeof(uint16_t));
+    uint8_t dataout;
+    int x = 0;
     printf("----\n");
-    while(x < sizeof(double))
+    uint8_t* p = cb->buffer;
+    while(x < 2*sizeof(uint8_t))
     {
-        printf("%02x \n", *(cb->buffer + x));
-        x+= sizeof(uint8_t);
+        printf("%02x \n", *(p++));
+        x++;
     }
-    cb_read(cb, &dataout, sizeof(double));
+    
+    cb_read(cb, &dataout, sizeof(uint8_t));
+    printf("%02x \n", dataout);
+    cb_read(cb, &dataout, sizeof(uint8_t));
+    printf("%02x \n", dataout);
+    cb_read(cb, &dataout, sizeof(uint8_t));
+    printf("%02x \n", dataout);
   //  printf("\n%f %f\n", creal(dataout), cimag(dataout));
     int y = cb_destroy(cb);
     return 0;

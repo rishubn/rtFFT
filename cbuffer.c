@@ -7,7 +7,7 @@ cbuffer_t* cb_create(size_t capacity)
     cbuffer_t* cb = malloc(sizeof(cbuffer_t));
     if(cb)
     {
-        cb->capacity = capacity+1;
+        cb->capacity = capacity;
         cb->buffer = malloc(cb->capacity);
         if(!cb->buffer)
         {
@@ -23,7 +23,9 @@ cbuffer_t* cb_create(size_t capacity)
 int cb_destroy(cbuffer_t* cb)
 {
     free(cb->buffer);
+    cb->buffer = NULL;
     free(cb);
+    cb = NULL;
     return E_SUCCESS;
 }
 
@@ -31,14 +33,28 @@ int cb_read(cbuffer_t* cb, void* data, size_t datasize)
 {
     if(cb->head == cb->tail)
     {
-        return NULL;
+        return E_BUFFER_EMPTY;
     }
-    memcpy(data, cb->tail, datasize);
-    cb->tail = cb->tail + datasize;
-    /*uint8_t* next = tail + count;
-    next = &(*next & 7);
-    void* data = cb->buffer[cb->tail];
-    cb->tail = next;*/
+    const uint8_t* end = cb->buffer + cb->capacity;
+    const uint8_t* dst = data;
+    size_t i;
+  //  printf("-----------b");
+    for(i = 0; i < datasize; i++)
+    {
+        // wrap
+        if(cb->tail >= end)
+        {
+            cb->tail = cb->buffer;
+        }
+        if(cb->tail == cb->head)
+        {
+            return E_UNDERFLOW;
+        }
+        memcpy(dst, cb->tail, sizeof(uint8_t));
+     //   printf("%02x\n", *(src));
+        cb->tail++;
+        dst++;
+    }
     return E_SUCCESS;
 }
 
@@ -47,17 +63,18 @@ int cb_write(cbuffer_t* cb, const void* data, size_t datasize)
     const uint8_t* src = data;
     const uint8_t* end = cb->buffer + cb->capacity;
     size_t i;
-    for(i = 0; i < datasize; i += sizeof(uint8_t))
+    for(i = 0; i < datasize; i++)
     {
-        cb->head = cb->head + i;
         // wrap
         if(cb->head >= end)
         {
             cb->head = cb->buffer;
         }
-        memcpy(cb->head, src + i, sizeof(uint8_t));
-        printf("%02x\n", *(src+i));
+        memcpy(cb->head, src, sizeof(uint8_t));
+        src++;
+        cb->head++;
     }
+    
     return E_SUCCESS;
 }
 

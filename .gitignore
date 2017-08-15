@@ -2,3 +2,5 @@ rtFFT
 tags
 types_c.taghl
 *.taghl
+.vscode/launch.json
+*.vscode*

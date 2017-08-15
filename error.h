@@ -12,6 +12,8 @@ typedef enum error_codes
     E_INVALID_INPUT = -1,
     E_INVALID_FILE = -2,
     E_BUFFER_INIT_ERROR = -3,
+    E_UNDERFLOW = -4,
+    E_BUFFER_EMPTY = -5
 } error_t;
 
 struct errordesc {

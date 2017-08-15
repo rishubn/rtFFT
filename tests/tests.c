@@ -3,6 +3,7 @@
 #include <float.h>
 #include "minunit.h"
 #include "../fft.h"
+#include "../cbuffer.h"
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
 #define KGRN  "\x1B[32m"
@@ -80,6 +81,19 @@ static char* test_bitReverseCopy()
     }
     return 0;
 }
+static char* test_cb_create()
+{
+    size_t expected_capacity = 2*sizeof(uint8_t);
+    cbuffer_t* cb = cb_create(2*sizeof(uint8_t));
+    mu_assert("cb_create returned a null buffer", cb != NULL);
+    mu_assert("cb_create did not create expected capacity", cb->capacity == expected_capacity);
+    mu_assert("cb_create did not initialize internal buffer", cb->buffer != NULL);
+    mu_assert("cb_create did not initialize buffer head", cb->head == cb->buffer);
+    mu_assert("cb_create did not initialize buffer tail", cb->tail == cb->buffer);
+    cb_destroy(cb);
+    return 0;
+}
+
 //Tests FFT on a shifted impulse. Expected data provided by MATLAB
 static char* test_iterativeFFT()
 {
@@ -120,6 +134,7 @@ static char* all_tests()
     mu_run_test(test_checkPowerTwo);
     mu_run_test(test_bitReverseCopy);
     mu_run_test(test_iterativeFFT);
+    mu_run_test(test_cb_create);
     return 0;
 }
 

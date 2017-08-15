@@ -20,7 +20,7 @@ typedef struct {
 cbuffer_t* cb_create(size_t capacity);
 
 //free the memory used by a circle buffer
-int cb_destory(cbuffer_t* cb);
+int cb_destroy(cbuffer_t* cb);
 
 //Read data from the tail pointer to tail+datasize
 int cb_read(cbuffer_t* cb, void* data, size_t datasize);
