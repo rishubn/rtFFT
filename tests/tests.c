@@ -134,10 +134,12 @@ static char* test_cb_read()
     uint8_t d = 0xDD;
     uint8_t e = 0xEE;
     mu_assert("Buffer not initialized to empty", cb_read(cb, NULL, 0));
+
     // Write four bytes of data to the buffer
     cb_write(cb, &a, sizeof(uint8_t));
     cb_write(cb, &bc, sizeof(uint16_t));
     cb_write(cb, &d, sizeof(uint8_t));
+    
 
 }
 //Tests FFT on a shifted impulse. Expected data provided by MATLAB
