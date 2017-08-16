@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-cbuffer_t* cb_create(size_t capacity)
+cbuffer_t* cb_create(const size_t capacity)
 {
     cbuffer_t* cb = malloc(sizeof(cbuffer_t));
     if(cb)
@@ -16,6 +16,8 @@ cbuffer_t* cb_create(size_t capacity)
         }
         cb->head = cb->buffer;
         cb->tail = cb->buffer;
+        cb->count = 0;
+        cb->end = cb->buffer + cb->capacity;
     }
     return cb;
 }
@@ -31,25 +33,26 @@ int cb_destroy(cbuffer_t* cb)
 
 int cb_read(cbuffer_t* cb, void* data, size_t datasize)
 {
-    if(cb->head == cb->tail)
+    if(cb->count == 0)
     {
         return E_BUFFER_EMPTY;
     }
-    const uint8_t* end = cb->buffer + cb->capacity;
-    const uint8_t* dst = data;
-    const uint8_t* start = cb->tail;
+    else if((cb->count - datasize) >= INT_MAX)
+    {
+        return E_UNDERFLOW;
+    }
+    else 
+    {
+        cb->count -= datasize;
+    }
+    uint8_t* dst = data;
     size_t i;
     for(i = 0; i < datasize; i++)
     {
         // wrap
-        if(cb->tail >= end)
+        if(cb->tail >= cb->end)
         {
             cb->tail = cb->buffer;
-        }
-        if(cb->tail == cb->head)
-        {
-            cb->tail = start; //reset the tail when underflow occurs
-            return E_UNDERFLOW;
         }
         memcpy(dst, cb->tail, sizeof(uint8_t));
         cb->tail++;
@@ -61,12 +64,12 @@ int cb_read(cbuffer_t* cb, void* data, size_t datasize)
 int cb_write(cbuffer_t* cb, const void* data, size_t datasize)
 {
     const uint8_t* src = data;
-    const uint8_t* end = cb->buffer + cb->capacity;
     size_t i;
+    cb->count = MIN(cb->count + datasize, cb->capacity);
     for(i = 0; i < datasize; i++)
     {
         // wrap
-        if(cb->head >= end)
+        if(cb->head >= cb->end)
         {
             cb->head = cb->buffer;
         }
@@ -77,14 +80,12 @@ int cb_write(cbuffer_t* cb, const void* data, size_t datasize)
     
     return E_SUCCESS;
 }
+int cb_write_dcompt(cbuffer_t* cb, const dcomp_t* data)
+{
+    return cb_write(cb, data, sizeof(dcomp_t));
+}
 
-
-
-
-
-
-
-
-
-
-
+int cb_read_dcompt(cbuffer_t* cb, dcomp_t* data)
+{
+    return cb_read(cb, data, sizeof(dcomp_t));
+}

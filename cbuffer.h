@@ -6,13 +6,17 @@
  */
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
+#include <sys/param.h>
 #include "error.h"
 #include "fft.h"
 typedef struct {
-    uint8_t* buffer;
-    uint8_t* head;
-    uint8_t* tail;
-    size_t capacity;
+    uint8_t* buffer; // Starting byte
+    uint8_t* head; // Buffer head, write from here
+    uint8_t* tail; // Buffer tail, read from here
+    uint8_t* end; // Ending byte of the buffer
+    size_t capacity; // Total size of the buffer
+    size_t count; // Size of the data that can be read in the buffer
 } cbuffer_t;
 
 //Create a circle buffer of size capacity
@@ -31,5 +35,14 @@ int cb_read(cbuffer_t* cb, void* data, size_t datasize);
 //Warning: This function does not check if the head writes over the tail; overflows can happen
 //Returns E_SUCCESS on write success
 int cb_write(cbuffer_t* cb, const void* data, size_t datasize);
+
+
+int cb_write_dcompt(cbuffer_t* cb, const dcomp_t* data);
+
+int cb_read_dcompt(cbuffer_t* cb, dcomp_t* data);
+
+
+
+
 
 #endif

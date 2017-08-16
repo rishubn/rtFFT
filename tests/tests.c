@@ -133,14 +133,37 @@ static char* test_cb_read()
     uint16_t bc = 0xBBCC;
     uint8_t d = 0xDD;
     uint8_t e = 0xEE;
-    mu_assert("Buffer not initialized to empty", cb_read(cb, NULL, 0));
+    
+    uint8_t aRead;
+    uint16_t bcRead;
+    uint8_t dRead;
+    
+    mu_assert("Buffer not initialized to empty", cb_read(cb, NULL, 0) == E_BUFFER_EMPTY);
 
-    // Write four bytes of data to the buffer
+    // Write four bytes of data to the buffer and read them back
     cb_write(cb, &a, sizeof(uint8_t));
     cb_write(cb, &bc, sizeof(uint16_t));
     cb_write(cb, &d, sizeof(uint8_t));
-    
 
+    //Test Underflow
+    mu_assert("Buffer did not detect underflow", cb_read(cb, &aRead, sizeof(double)) == E_UNDERFLOW);    
+    cb_read(cb, &aRead, sizeof(uint8_t));
+    cb_read(cb, &bcRead, sizeof(uint16_t));
+    cb_read(cb, &dRead, sizeof(uint8_t));
+
+    mu_assert("cb_read did not read properly", a == aRead);
+    mu_assert("cb_read did not read properly", bc == bcRead);
+    mu_assert("cb_read did not read properly", d == dRead);
+
+    //Write some bytes and read it as a uint32_t
+    cb_write(cb, &a, sizeof(uint8_t));
+    cb_write(cb, &bc, sizeof(uint16_t));
+    cb_write(cb, &e, sizeof(uint8_t));
+
+    uint32_t read;
+    cb_read(cb, &read, sizeof(uint32_t));
+    mu_assert("cb_read did not read properly", read == 0xEEBBCCAA);
+    return 0;
 }
 //Tests FFT on a shifted impulse. Expected data provided by MATLAB
 static char* test_iterativeFFT()
@@ -184,6 +207,7 @@ static char* all_tests()
     mu_run_test(test_iterativeFFT);
     mu_run_test(test_cb_create);
     mu_run_test(test_cb_write);
+    mu_run_test(test_cb_read);
     return 0;
 }
 
